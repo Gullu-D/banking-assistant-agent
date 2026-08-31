@@ -1,0 +1,5 @@
+transaction_id,date,description,merchant,category,type,amount,account
+TXN9001,2026-07-05,Suspicious row,Unknown Merchant,Shopping,Debit,not_a_number,Primary
+TXN9002,not-a-date,Bad date row,Unknown Merchant,Shopping,Debit,5000,Primary
+TXN9003,2026-07-06,Missing amount row,Unknown Merchant,Shopping,Debit,,Primary
+TXN9004,2026-07-07,Valid row among dirty data,Amazon,Shopping,Debit,12000,Primary

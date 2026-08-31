@@ -1,0 +1,94 @@
+transaction_id,date,description,merchant,category,type,amount,account
+TXN0001,2026-06-02,Salary credit,Company Salary,Salary / Income,Credit,91394.27,Primary
+TXN0002,2026-06-03,Restaurant / food order,Cafe Coffee Day,Food & Dining,Debit,960.57,Primary
+TXN0003,2026-06-03,Restaurant / food order,Zomato,Food & Dining,Debit,2044.13,Primary
+TXN0004,2026-06-04,Grocery purchase,Reliance Fresh,Groceries,Debit,1056.48,Primary
+TXN0005,2026-06-05,Monthly rent,ABC Properties,Rent,Debit,35000.0,Primary
+TXN0006,2026-06-06,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,5000,Primary
+TXN0007,2026-06-07,Utility bill payment,State Electricity Board,Utilities,Debit,1835.02,Primary
+TXN0008,2026-06-08,Utility bill payment,Jio Fiber,Utilities,Debit,999.0,Primary
+TXN0009,2026-06-08,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,5000,Primary
+TXN0010,2026-06-09,Restaurant / food order,Zomato,Food & Dining,Debit,1723.58,Primary
+TXN0011,2026-06-09,Healthcare expense,Max Healthcare,Healthcare,Debit,17978.49,Primary
+TXN0012,2026-06-10,Investment contribution,Zerodha,Investments,Debit,12750.29,Primary
+TXN0013,2026-06-11,Grocery purchase,More Supermarket,Groceries,Debit,2167.23,Primary
+TXN0014,2026-06-11,Travel booking,OYO Rooms,Travel,Debit,52928.34,Primary
+TXN0015,2026-06-12,Entertainment expense,Netflix,Entertainment,Debit,1016.48,Primary
+TXN0016,2026-06-18,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,2000,Primary
+TXN0017,2026-06-19,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,5000,Primary
+TXN0018,2026-06-19,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,2000,Primary
+TXN0019,2026-06-20,Entertainment expense,BookMyShow,Entertainment,Debit,1660.09,Primary
+TXN0020,2026-06-21,Healthcare expense,Fortis Hospital,Healthcare,Debit,37465.41,Primary
+TXN0021,2026-06-22,Grocery purchase,BigBasket,Groceries,Debit,4944.01,Primary
+TXN0022,2026-06-22,Restaurant / food order,Cafe Coffee Day,Food & Dining,Debit,990.67,Primary
+TXN0023,2026-06-24,Entertainment expense,BookMyShow,Entertainment,Debit,1256.14,Primary
+TXN0024,2026-06-26,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,2000,Primary
+TXN0025,2026-06-27,Online / retail purchase,Flipkart,Shopping,Debit,16444.51,Primary
+TXN0026,2026-06-28,Restaurant / food order,Swiggy,Food & Dining,Debit,1367.86,Primary
+TXN0027,2026-06-28,Entertainment expense,BookMyShow,Entertainment,Debit,734.65,Primary
+TXN0028,2026-06-30,Fund transfer,NEFT Transfer,Transfers,Debit,9780.0,Primary
+TXN0029,2026-07-01,Grocery purchase,More Supermarket,Groceries,Debit,6222.9,Primary
+TXN0030,2026-07-02,Salary credit,Company Salary,Salary / Income,Credit,93846.83,Primary
+TXN0031,2026-07-02,Entertainment expense,Netflix,Entertainment,Debit,753.25,Primary
+TXN0032,2026-07-03,Fund transfer,IMPS Transfer,Transfers,Debit,6079.13,Primary
+TXN0033,2026-07-03,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,10000,Primary
+TXN0034,2026-07-04,Entertainment expense,Spotify,Entertainment,Debit,874.34,Primary
+TXN0035,2026-07-04,Fund transfer,UPI Transfer,Transfers,Debit,13971.93,Primary
+TXN0036,2026-07-05,Monthly rent,ABC Properties,Rent,Debit,35000.0,Primary
+TXN0037,2026-07-05,Restaurant / food order,Cafe Coffee Day,Food & Dining,Debit,2289.2,Primary
+TXN0038,2026-07-05,Entertainment expense,Netflix,Entertainment,Debit,1059.38,Primary
+TXN0039,2026-07-07,Utility bill payment,State Electricity Board,Utilities,Debit,2699.99,Primary
+TXN0040,2026-07-08,Utility bill payment,Jio Fiber,Utilities,Debit,999.0,Primary
+TXN0041,2026-07-08,Fund transfer,NEFT Transfer,Transfers,Debit,14961.22,Primary
+TXN0042,2026-07-10,Investment contribution,Zerodha,Investments,Debit,11428.72,Primary
+TXN0043,2026-07-13,Electronics purchase,ABC Electronics,Shopping,Debit,185000.0,Primary
+TXN0044,2026-07-16,Grocery purchase,Nature's Basket,Groceries,Debit,1045.46,Primary
+TXN0045,2026-07-16,Travel booking,OYO Rooms,Travel,Debit,57608.19,Primary
+TXN0046,2026-07-16,Term fee payment,City International School,Education,Debit,75000.0,Primary
+TXN0047,2026-07-17,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,5000,Primary
+TXN0048,2026-07-17,Entertainment expense,Netflix,Entertainment,Debit,2298.96,Primary
+TXN0049,2026-07-17,Travel booking,Ola Cabs,Travel,Debit,54259.49,Primary
+TXN0050,2026-07-18,Grocery purchase,Nature's Basket,Groceries,Debit,2076.45,Primary
+TXN0051,2026-07-19,International flight booking,MakeMyTrip,Travel,Debit,92000.0,Primary
+TXN0052,2026-07-20,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,5000,Primary
+TXN0053,2026-07-21,Laptop purchase,Croma,Shopping,Debit,54999.0,Primary
+TXN0054,2026-07-22,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,10000,Primary
+TXN0055,2026-07-22,Laptop purchase,Croma,Shopping,Debit,54999.0,Primary
+TXN0056,2026-07-25,Fund transfer,UPI Transfer,Transfers,Debit,8224.24,Primary
+TXN0057,2026-07-26,Online / retail purchase,Amazon,Shopping,Debit,61000.0,Primary
+TXN0058,2026-07-26,Event tickets bulk purchase,PVR Cinemas,Entertainment,Debit,58000.0,Primary
+TXN0059,2026-07-27,Online / retail purchase,Flipkart,Shopping,Debit,63500.0,Primary
+TXN0060,2026-07-29,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,10000,Primary
+TXN0061,2026-07-29,Restaurant / food order,Barbeque Nation,Food & Dining,Debit,1995.15,Primary
+TXN0062,2026-07-31,Grocery purchase,Nature's Basket,Groceries,Debit,5171.76,Primary
+TXN0063,2026-08-02,Salary credit,Company Salary,Salary / Income,Credit,89231.38,Primary
+TXN0064,2026-08-02,Education payment,Udemy,Education,Debit,58235.05,Primary
+TXN0065,2026-08-03,Grocery purchase,BigBasket,Groceries,Debit,4747.05,Primary
+TXN0066,2026-08-03,Restaurant / food order,Domino's Pizza,Food & Dining,Debit,3192.62,Primary
+TXN0067,2026-08-03,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,2000,Primary
+TXN0068,2026-08-04,Fund transfer,UPI Transfer,Transfers,Debit,1905.5,Primary
+TXN0069,2026-08-04,Fund transfer,IMPS Transfer,Transfers,Debit,1233.53,Primary
+TXN0070,2026-08-05,Monthly rent,ABC Properties,Rent,Debit,35000.0,Primary
+TXN0071,2026-08-05,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,2000,Primary
+TXN0072,2026-08-06,Fund transfer,UPI Transfer,Transfers,Debit,5995.11,Primary
+TXN0073,2026-08-07,Utility bill payment,State Electricity Board,Utilities,Debit,2096.52,Primary
+TXN0074,2026-08-07,Restaurant / food order,Domino's Pizza,Food & Dining,Debit,868.18,Primary
+TXN0075,2026-08-08,Utility bill payment,Jio Fiber,Utilities,Debit,999.0,Primary
+TXN0076,2026-08-08,Restaurant / food order,Domino's Pizza,Food & Dining,Debit,458.08,Primary
+TXN0077,2026-08-08,Cash withdrawal,ATM Withdrawal,ATM / Cash Withdrawal,Debit,5000,Primary
+TXN0078,2026-08-10,Investment contribution,Zerodha,Investments,Debit,15392.96,Primary
+TXN0079,2026-08-11,Online / retail purchase,Reliance Digital,Shopping,Debit,17572.44,Primary
+TXN0080,2026-08-13,Grocery purchase,Reliance Fresh,Groceries,Debit,6470.9,Primary
+TXN0081,2026-08-13,Restaurant / food order,Cafe Coffee Day,Food & Dining,Debit,2616.69,Primary
+TXN0082,2026-08-14,Fund transfer,NEFT Transfer,Transfers,Debit,6460.98,Primary
+TXN0083,2026-08-14,Fund transfer,UPI Transfer,Transfers,Debit,3160.58,Primary
+TXN0084,2026-08-14,Fund transfer,NEFT Transfer,Transfers,Debit,10600.58,Primary
+TXN0085,2026-08-16,Grocery purchase,More Supermarket,Groceries,Debit,3388.15,Primary
+TXN0086,2026-08-17,Entertainment expense,BookMyShow,Entertainment,Debit,746.65,Primary
+TXN0087,2026-08-18,Restaurant / food order,The Grand Kitchen,Food & Dining,Debit,997.87,Primary
+TXN0088,2026-08-18,Fund transfer,UPI Transfer,Transfers,Debit,2418.52,Primary
+TXN0089,2026-08-19,Travel booking,MakeMyTrip,Travel,Debit,48108.17,Primary
+TXN0090,2026-08-21,Restaurant / food order,Barbeque Nation,Food & Dining,Debit,3448.54,Primary
+TXN0091,2026-08-28,Fund transfer,UPI Transfer,Transfers,Debit,13887.35,Primary
+TXN0092,2026-08-29,Entertainment expense,PVR Cinemas,Entertainment,Debit,1389.94,Primary
+TXN0093,2026-08-30,Fund transfer,NEFT Transfer,Transfers,Debit,11869.02,Primary
