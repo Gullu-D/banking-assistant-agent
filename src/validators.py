@@ -29,6 +29,13 @@ Intent = Literal[
     "top_expenses",           # "show my biggest expenses"
     "category_spending",      # "how much did I spend on shopping"
     "anomaly_detection",      # "find unusual transactions"
+    "trend_analysis",         # "how has my spending changed" / month-over-month
+    "period_comparison",      # "compare this month to last month"
+    "insights_query",         # "what insights can you give me" / spending patterns
+    "merchant_analysis",      # "where do I spend the most" / top merchants
+    "income_analysis",        # "what is my income" / salary analysis
+    "cashflow_analysis",      # "what is my cash flow" / net position
+    "budget_query",           # "am I overspending" / budget-related
     "general_query",          # couldn't confidently classify -> safe default
 ]
 

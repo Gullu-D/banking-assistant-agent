@@ -51,7 +51,7 @@ class InvalidQueryError(Exception):
 _OPERATOR_KEYWORDS: list[tuple[re.Pattern, str]] = [
     (re.compile(r"\bat\s+least\b|\bminimum\s+of\b|\bmin\.?\s+of\b|>=", re.I), "greater_than_or_equal"),
     (re.compile(r"\bat\s+most\b|\bmaximum\s+of\b|\bmax\.?\s+of\b|<=", re.I), "less_than_or_equal"),
-    (re.compile(r"\babove\b|\bover\b|\bgreater\s+than\b|\bmore\s+than\b|\bexceeding\b|\bexceeds\b|>", re.I), "greater_than"),
+    (re.compile(r"\babove\b|\bover(?!\s+time)\b|\bgreater\s+than\b|\bmore\s+than\b|\bexceeding\b|\bexceeds\b|>", re.I), "greater_than"),
     (re.compile(r"\bbelow\b|\bunder\b|\bless\s+than\b|\bcheaper\s+than\b|<", re.I), "less_than"),
     (re.compile(r"\bexactly\b|\bequal\s+to\b|\bequals\b", re.I), "equal"),
 ]
@@ -97,6 +97,34 @@ _TOP_EXPENSE_KEYWORDS = re.compile(
 )
 _SUMMARY_KEYWORDS = re.compile(
     r"\bsummar(y|ize)\b|\bwhat\s+did\s+i\s+spend\b|\bhow\s+much\s+did\s+i\s+spend\b|\bspending\s+summary\b|\boverview\b",
+    re.I,
+)
+_TREND_KEYWORDS = re.compile(
+    r"\btrend\b|\btrending\b|\bover\s+time\b|\bmonth[\s-]+over[\s-]+month\b|\bchanged?\b|\bincreas\w*\b|\bdecreas\w*\b|\bgrowing\b|\brising\b|\bfalling\b",
+    re.I,
+)
+_COMPARISON_KEYWORDS = re.compile(
+    r"\bcompar[ei]\w*\b|\bversus\b|\bvs\.?\b|\bdifference\b|\bmore\s+than\s+last\b|\bless\s+than\s+last\b",
+    re.I,
+)
+_INSIGHT_KEYWORDS = re.compile(
+    r"\binsight\w*\b|\bpattern\w*\b|\banalyz[ei]\w*\s+my\b|\btell\s+me\s+about\b|\bwhat\s+can\s+you\s+tell\b|\bfinancial\s+health\b",
+    re.I,
+)
+_MERCHANT_KEYWORDS = re.compile(
+    r"\bmerchant\w*\b|\bwhere\s+do\s+i\s+spend\b|\btop\s+merchant\w*\b|\bvendor\w*\b|\bpayee\w*\b|\bwho\s+do\s+i\s+pay\b",
+    re.I,
+)
+_INCOME_KEYWORDS = re.compile(
+    r"\bincome\b|\bearning\w*\b|\bsalary\b|\bcredit\w*\b|\breceiv\w*\b|\bwhat\s+did\s+i\s+earn\b|\bhow\s+much\s+.*\bearn\b",
+    re.I,
+)
+_CASHFLOW_KEYWORDS = re.compile(
+    r"\bcash\s*flow\b|\bnet\s+position\b|\bbalance\b|\bsavings?\b|\bhow\s+much\s+.*\bsave\b|\bleft\s+over\b|\bremaining\b",
+    re.I,
+)
+_BUDGET_KEYWORDS = re.compile(
+    r"\bbudget\w*\b|\boverspend\w*\b|\bunder\s*spend\w*\b|\bafford\b|\btoo\s+much\b|\bcut\s+back\b|\breduce\s+spending\b",
     re.I,
 )
 _TOP_N_PATTERN = re.compile(r"\btop\s+(\d{1,3})\b", re.I)
@@ -167,6 +195,20 @@ def _extract_intent(text: str, has_amount: bool, has_category: bool) -> str:
         return "anomaly_detection"
     if _TOP_EXPENSE_KEYWORDS.search(text):
         return "top_expenses"
+    if _COMPARISON_KEYWORDS.search(text) and not has_amount:
+        return "period_comparison"
+    if _TREND_KEYWORDS.search(text) and not has_amount:
+        return "trend_analysis"
+    if _MERCHANT_KEYWORDS.search(text) and not has_amount:
+        return "merchant_analysis"
+    if _BUDGET_KEYWORDS.search(text) and not has_amount:
+        return "budget_query"
+    if _CASHFLOW_KEYWORDS.search(text) and not has_amount:
+        return "cashflow_analysis"
+    if _INCOME_KEYWORDS.search(text) and not has_amount:
+        return "income_analysis"
+    if _INSIGHT_KEYWORDS.search(text) and not has_amount:
+        return "insights_query"
     if has_category and re.search(r"\bhow\s+much\b|\bspend\b|\bspent\b", text, re.I):
         return "category_spending"
     if has_amount:
@@ -183,9 +225,15 @@ def parse_deterministic(raw_query: str) -> StructuredQuery:
 
     amount, operator, unparseable = _extract_amount_and_operator(text)
     if unparseable:
-        raise InvalidQueryError(
-            "I couldn't determine the transaction amount. Please provide a valid amount such as ₹50,000."
-        )
+        # If the text matches a non-amount intent (comparison, trend, insight),
+        # the operator keyword was incidental (e.g. "more than last month").
+        # Suppress the error and proceed without an amount.
+        if _COMPARISON_KEYWORDS.search(text) or _TREND_KEYWORDS.search(text) or _INSIGHT_KEYWORDS.search(text):
+            amount, operator, unparseable = None, None, False
+        else:
+            raise InvalidQueryError(
+                "I couldn't determine the transaction amount. Please provide a valid amount such as ₹50,000."
+            )
 
     date_range = _extract_date_range(text)
     category = _extract_category(text)
@@ -203,10 +251,13 @@ def parse_deterministic(raw_query: str) -> StructuredQuery:
     # salary credit in with expenses. "transaction_analysis" (a literal
     # "show transactions above X") deliberately leaves type unrestricted,
     # since the user asked to see ALL transactions matching the amount.
-    spending_intents = {"spending_summary", "top_expenses", "category_spending", "anomaly_detection"}
+    spending_intents = {"spending_summary", "top_expenses", "category_spending", "anomaly_detection", "trend_analysis", "merchant_analysis", "budget_query"}
+    income_intents = {"income_analysis"}
     transaction_type = None
     if intent in spending_intents and category != "Salary / Income":
         transaction_type = "Debit"
+    elif intent in income_intents:
+        transaction_type = "Credit"
 
     return StructuredQuery(
         intent=intent,
@@ -230,7 +281,7 @@ def parse_deterministic(raw_query: str) -> StructuredQuery:
 _SYSTEM_PROMPT = """You are a query-understanding component for a banking transaction analysis tool.
 Given a user's natural-language banking question, extract a STRICT JSON object with these fields:
 
-- intent: one of "transaction_analysis", "spending_summary", "top_expenses", "category_spending", "anomaly_detection", "general_query"
+- intent: one of "transaction_analysis", "spending_summary", "top_expenses", "category_spending", "anomaly_detection", "trend_analysis", "period_comparison", "insights_query", "general_query"
 - amount_threshold: number or null (the INR amount mentioned, converted from lakh/crore/k to a plain number)
 - operator: one of "greater_than", "greater_than_or_equal", "less_than", "less_than_or_equal", "equal", or null
 - date_range: one of "today", "yesterday", "this_week", "last_week", "this_month", "last_month", "last_30_days", "this_year", "all_time"
@@ -283,12 +334,44 @@ def _call_gemini(raw_query: str) -> dict:
     return json.loads(response.text)
 
 
+def _call_ollama(raw_query: str) -> dict:
+    import urllib.request
+    payload = json.dumps({
+        "model": config.OLLAMA_MODEL,
+        "messages": [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": raw_query},
+        ],
+        "stream": False,
+        "format": "json",
+        "options": {"temperature": 0},
+    }).encode()
+    req = urllib.request.Request(
+        f"{config.OLLAMA_BASE_URL}/api/chat",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=config.LLM_REQUEST_TIMEOUT_SECONDS) as resp:
+        body = json.loads(resp.read())
+    content = body.get("message", {}).get("content", "")
+    return json.loads(content)
+
+
+_llm_disabled_until: float = 0.0
+
 def parse_with_llm(raw_query: str) -> StructuredQuery | None:
     """Attempt LLM-based parsing. Returns None (never raises) on any failure
     so the caller can transparently fall back to the deterministic parser.
     """
+    global _llm_disabled_until
+    import time
+
     provider = config.active_llm_provider()
     if provider is None:
+        return None
+
+    if provider != "ollama" and time.monotonic() < _llm_disabled_until:
         return None
 
     try:
@@ -296,18 +379,24 @@ def parse_with_llm(raw_query: str) -> StructuredQuery | None:
             data = _call_openai(raw_query)
         elif provider == "gemini":
             data = _call_gemini(raw_query)
+        elif provider == "ollama":
+            data = _call_ollama(raw_query)
         else:
             return None
 
         data["raw_query"] = raw_query
-        # Coerce empty-string nulls some models emit.
         for key in ("amount_threshold", "operator", "category", "top_n", "sort_by"):
             if data.get(key) == "":
                 data[key] = None
 
         return StructuredQuery(**data)
     except Exception as exc:  # noqa: BLE001 - any LLM/network/validation failure must degrade gracefully
-        logger.warning("LLM query parsing failed (%s); falling back to deterministic parser: %s", provider, exc)
+        exc_str = str(exc)
+        if "credit_balance_exhausted" in exc_str or "insufficient_quota" in exc_str or "billing" in exc_str.lower():
+            _llm_disabled_until = time.monotonic() + 3600
+            logger.warning("LLM provider (%s) has no credits; disabling for 1 hour. Falling back to deterministic.", provider)
+        else:
+            logger.warning("LLM query parsing failed (%s); falling back to deterministic parser: %s", provider, exc)
         return None
 
 

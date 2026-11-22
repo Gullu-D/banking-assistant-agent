@@ -1,0 +1,45 @@
+# Environment / secrets
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# IDE / OS / tool state
+.vscode/
+.idea/
+.claude/
+.DS_Store
+Thumbs.db
+
+# Database
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Raw data workbooks (do not redistribute without checking licence)
+data/*.xlsx
+data/*.xls
+
+# Logs
+*.log

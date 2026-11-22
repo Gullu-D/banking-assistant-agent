@@ -9,6 +9,7 @@ averages, and breakdowns shown in the UI and handed to the summarizer.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date
 
 import numpy as np
 import pandas as pd
@@ -133,3 +134,80 @@ def spending_over_time(filtered_df: pd.DataFrame, freq: str = "D") -> pd.DataFra
     series = spend["amount"].resample(freq).sum().reset_index()
     series.columns = ["period", "amount"]
     return series
+
+
+def income_expense_over_time(df: pd.DataFrame, freq: str = "MS") -> pd.DataFrame:
+    """Return a time series with income, expense, and net columns per period."""
+    if df.empty:
+        return pd.DataFrame(columns=["period", "income", "expense", "net"])
+
+    tmp = df.copy()
+    tmp = tmp.set_index("date")
+
+    expense = tmp.loc[tmp["type"] == "Debit", "amount"].resample(freq).sum()
+    income = tmp.loc[tmp["type"] == "Credit", "amount"].resample(freq).sum()
+
+    combined = pd.DataFrame({"income": income, "expense": expense}).fillna(0)
+    combined["net"] = combined["income"] - combined["expense"]
+    combined = combined.reset_index().rename(columns={"date": "period"})
+    return combined
+
+
+def top_merchants(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
+    """Return top-n merchants by total spending (Debit only)."""
+    if df.empty:
+        return pd.DataFrame(columns=["merchant", "total", "count"])
+
+    spend = df[df["type"] == "Debit"]
+    if spend.empty:
+        return pd.DataFrame(columns=["merchant", "total", "count"])
+
+    grouped = (
+        spend.groupby("merchant")["amount"]
+        .agg(total="sum", count="count")
+        .reset_index()
+        .sort_values("total", ascending=False)
+        .head(n)
+    )
+    return grouped
+
+
+def period_comparison(
+    df: pd.DataFrame,
+    current_start: date,
+    current_end: date,
+) -> dict:
+    """Compare current period stats against the equivalent previous period.
+
+    Previous period is the same number of days immediately before current_start.
+    Returns dict with current/previous OverallStatistics and pct changes.
+    """
+    from datetime import timedelta
+
+    days = (current_end - current_start).days + 1
+    prev_end = current_start - timedelta(days=1)
+    prev_start = prev_end - timedelta(days=days - 1)
+
+    cur_mask = (df["date"] >= pd.Timestamp(current_start)) & (df["date"] <= pd.Timestamp(current_end))
+    prev_mask = (df["date"] >= pd.Timestamp(prev_start)) & (df["date"] <= pd.Timestamp(prev_end))
+
+    cur_stats = calculate_overall_statistics(df[cur_mask])
+    prev_stats = calculate_overall_statistics(df[prev_mask])
+
+    def pct_change(cur: float, prev: float) -> float | None:
+        if prev == 0:
+            return None
+        return round((cur - prev) / prev * 100, 1)
+
+    return {
+        "current": cur_stats,
+        "previous": prev_stats,
+        "prev_start": prev_start,
+        "prev_end": prev_end,
+        "changes": {
+            "spending": pct_change(cur_stats.total_spending, prev_stats.total_spending),
+            "income": pct_change(cur_stats.total_income, prev_stats.total_income),
+            "net_cash_flow": pct_change(cur_stats.net_cash_flow, prev_stats.net_cash_flow),
+            "transactions": pct_change(cur_stats.total_transactions, prev_stats.total_transactions),
+        },
+    }

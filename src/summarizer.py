@@ -20,13 +20,16 @@ import json
 import re
 
 import config
+from src.formatting import format_inr
 from src.validators import AnalysisSummaryInput
 
 logger = config.get_logger(__name__)
 
+_currency: str | None = None
+
 
 def _fmt(amount: float) -> str:
-    return f"{config.CURRENCY_SYMBOL}{amount:,.0f}"
+    return format_inr(amount, _currency)
 
 
 # --------------------------------------------------------------------------- #
@@ -189,13 +192,43 @@ def _call_gemini_summary(payload: dict) -> str:
     return response.text.strip()
 
 
-def generate_summary(data: AnalysisSummaryInput) -> tuple[str, str]:
+def _call_ollama_summary(payload: dict) -> str:
+    import urllib.request
+    body = json.dumps({
+        "model": config.OLLAMA_MODEL,
+        "messages": [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": json.dumps(payload, default=str)},
+        ],
+        "stream": False,
+        "options": {"temperature": 0.3},
+    }).encode()
+    req = urllib.request.Request(
+        f"{config.OLLAMA_BASE_URL}/api/chat",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=config.LLM_REQUEST_TIMEOUT_SECONDS) as resp:
+        data = json.loads(resp.read())
+    return data.get("message", {}).get("content", "").strip()
+
+
+_llm_disabled_until: float = 0.0
+
+def generate_summary(data: AnalysisSummaryInput, *, currency: str | None = None) -> tuple[str, str]:
     """Generate a spending summary. Returns (summary_text, method) where
     method is "ai" or "template". Always succeeds — falls back to the
     deterministic template on any LLM failure or grounding-check failure.
     """
+    global _llm_disabled_until, _currency
+    _currency = currency
+    import time
+
     provider = config.active_llm_provider()
     if provider is None:
+        return generate_template_summary(data), "template"
+    if provider != "ollama" and time.monotonic() < _llm_disabled_until:
         return generate_template_summary(data), "template"
 
     try:
@@ -204,6 +237,8 @@ def generate_summary(data: AnalysisSummaryInput) -> tuple[str, str]:
             text = _call_openai_summary(payload)
         elif provider == "gemini":
             text = _call_gemini_summary(payload)
+        elif provider == "ollama":
+            text = _call_ollama_summary(payload)
         else:
             return generate_template_summary(data), "template"
 
@@ -216,5 +251,10 @@ def generate_summary(data: AnalysisSummaryInput) -> tuple[str, str]:
 
         return text, "ai"
     except Exception as exc:  # noqa: BLE001 - LLM failures must never crash the app
-        logger.warning("AI summary generation failed (%s); falling back to template: %s", provider, exc)
+        exc_str = str(exc)
+        if "credit_balance_exhausted" in exc_str or "insufficient_quota" in exc_str:
+            _llm_disabled_until = time.monotonic() + 3600
+            logger.warning("LLM provider (%s) has no credits; disabling summaries for 1 hour.", provider)
+        else:
+            logger.warning("AI summary generation failed (%s); falling back to template: %s", provider, exc)
         return generate_template_summary(data), "template"
