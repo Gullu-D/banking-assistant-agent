@@ -27,15 +27,18 @@ import numpy as np
 import pandas as pd
 
 import config
+from src.formatting import format_inr
 from src.validators import AnomalyRecord
 
 logger = config.get_logger(__name__)
 
 MIN_SAMPLE_SIZE_FOR_STATS = 5
 
+_currency: str | None = None
+
 
 def _format_amount(amount: float) -> str:
-    return f"{config.CURRENCY_SYMBOL}{amount:,.0f}"
+    return format_inr(amount, _currency)
 
 
 def _detect_statistical_outliers(spend_df: pd.DataFrame) -> list[AnomalyRecord]:
@@ -170,7 +173,7 @@ def _detect_rapid_repeated_large(spend_df: pd.DataFrame) -> list[AnomalyRecord]:
     return records
 
 
-def detect_anomalies(df: pd.DataFrame) -> list[AnomalyRecord]:
+def detect_anomalies(df: pd.DataFrame, *, currency: str | None = None) -> list[AnomalyRecord]:
     """Run all anomaly detection methods over `df` (typically the
     period-scoped, categorized spending data — NOT limited to the user's
     amount-threshold filter, so the baseline "normal" pattern is meaningful).
@@ -178,6 +181,9 @@ def detect_anomalies(df: pd.DataFrame) -> list[AnomalyRecord]:
     Only Debit (spending) transactions are considered; income/credits are
     excluded since anomaly detection here is about spending behavior.
     """
+    global _currency
+    _currency = currency
+
     if df.empty:
         return []
 

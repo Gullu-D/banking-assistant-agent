@@ -149,6 +149,7 @@ class TransactionRepository:
         if report.valid_rows == 0:
             raise EmptyDatasetError()
 
+        df = self._correct_types_from_category(df)
         df = df.sort_values("date", kind="stable").reset_index(drop=True)
 
         logger.info(
@@ -274,6 +275,27 @@ class TransactionRepository:
                 f"{len(dup_ids)} duplicate transaction_id value(s) found in the source file."
             )
 
+        return df
+
+    # ------------------------------------------------------------------ #
+    @staticmethod
+    def _correct_types_from_category(df: pd.DataFrame) -> pd.DataFrame:
+        """Fix type using category when every row has the same type."""
+        if df.empty or df["type"].nunique() > 1:
+            return df
+        income_cats = {c.casefold() for c in config.INCOME_CATEGORIES}
+        from src.categorizer import normalize_category
+        def _is_income(cat: str) -> bool:
+            low = cat.casefold()
+            if low in income_cats:
+                return True
+            canonical = normalize_category(cat)
+            return canonical is not None and canonical.casefold() in income_cats
+        mask = df["category"].apply(_is_income)
+        if mask.any():
+            df = df.copy()
+            df.loc[mask, "type"] = "Credit"
+            logger.info("Corrected type to Credit for %d income-category transaction(s)", int(mask.sum()))
         return df
 
     # ------------------------------------------------------------------ #
